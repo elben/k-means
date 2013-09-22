@@ -87,29 +87,49 @@
   (is (= 0 (find-closest [55 55] [[50 50] [100 100]])))
   (is (= 1 (find-closest [99 99] [[50 50] [100 100]]))))
 
-(defn find-centers
+
+(defn center-of-points [points]
+  "Return the mean center of the given points"
+  (let [dim (count (first points))]
+  (apply vector (map / (apply map + points) (repeat dim (double (count points)))))))
+
+(defn collect-points-to-centers
   [points centers]
-  "Find closest center for each point")
+  "Returns a vector of vector of points, where nth item in vector are points
+  belonging in nth center."
+  (let [init-coll (apply vector (repeat (count centers) []))]
+    (reduce (fn [coll p]
+              (let [closest-center (find-closest p centers)
+                    center-batch (nth coll closest-center)
+                    updated-center-batch (conj center-batch p)]
+                (assoc coll closest-center updated-center-batch)))
+            init-coll
+            points)))
+
+(deftest test-collect-points-to-centers
+  (is (= [] (collect-points-to-centers [] [])))
+
+  ;; Points 10,10 and 20,20 go to center 0, and point 100,100 goes to center 1.
+  (is (= [[[10 10] [20 20]] [[100 100]]]
+         (collect-points-to-centers [[10 10] [20 20] [100 100]] [[0 0] [100 100]]))))
 
 (defn k-means
   "Returns list of lists, categorized by k-means"
   [points k]
-  (let [dim (count (first points))
-        starting-centers (sample-k-random points k)]
-    (loop [current-centers starting-centers
-           iters 10
-           center-buckets (repeat dim [])]
-      (if (> iters 0)
-        ((group-by (fn [p] (find-closest p current-centers)) points)
-         ;; for each point
-            ;; find nearest cluster and separate out to different clusters.
-          ;; then find new k cluster centers
-         (recur updated-centers (incr iters)))))))
+  (if (> k (count points))
+    (println "Does not support k higher than number of points")
+    (let [dim (count (first points))
+          starting-centers (sample-k-random points k)]
+      (loop [current-centers starting-centers
+             iters 10]
+        (if (<= iters 0)
+          current-centers
+          (let [center-buckets (collect-points-to-centers points current-centers)
+                updated-centers (apply vector (map center-of-points center-buckets))]
+            (recur updated-centers (dec iters))))))))
 
 (def points [[10 10] [20 20] [100 100]])
 (def current-centers [[0 0] [120 120]])
-(group-by (fn [p] (find-closest p current-centers)) points)
-
 
 (defn generate-point
   [n-dim]
@@ -120,6 +140,10 @@
   [n-dim n]
   (repeatedly n #(generate-point n-dim)))
 
+;; Using k-means
+
+(def points (geneate-points 2 100))
+(def centers (k-means points 5))
 
 ; (defn k-means
 ;   "Returns list of lists, categorized by k-means"
