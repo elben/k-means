@@ -75,7 +75,7 @@
 (defn find-closest
   [p centers]
   "Returns index of center that p is closest to."
-  (let [pointer-center-pairs (apply vector (map (fn [p center] [p center]) (repeat (count centers) p) centers))
+  (let [pointer-center-pairs (vec (map (fn [p center] [p center]) (repeat (count centers) p) centers))
         euclid-distances (map euclid-distance pointer-center-pairs)
         min-distance (apply min euclid-distances)]
     (.indexOf euclid-distances min-distance)))
@@ -91,13 +91,13 @@
 (defn center-of-points [points]
   "Return the mean center of the given points"
   (let [dim (count (first points))]
-  (apply vector (map / (apply map + points) (repeat dim (double (count points)))))))
+  (vec (map / (apply map + points) (repeat dim (double (count points)))))))
 
 (defn collect-points-to-centers
   [points centers]
   "Returns a vector of vector of points, where nth item in vector are points
   belonging in nth center."
-  (let [init-coll (apply vector (repeat (count centers) []))]
+  (let [init-coll (vec (repeat (count centers) []))]
     (reduce (fn [coll p]
               (let [closest-center (find-closest p centers)
                     center-batch (nth coll closest-center)
@@ -125,7 +125,7 @@
         (if (<= iters 0)
           current-centers
           (let [center-buckets (collect-points-to-centers points current-centers)
-                updated-centers (apply vector (map center-of-points center-buckets))]
+                updated-centers (vec (map center-of-points center-buckets))]
             (recur updated-centers (dec iters))))))))
 
 (def points [[10 10] [20 20] [100 100]])
