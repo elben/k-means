@@ -32,10 +32,10 @@
   (is (= 0 (find-closest [55 55] [[50 50] [100 100]])))
   (is (= 1 (find-closest [99 99] [[50 50] [100 100]]))))
 
-(deftest test-collect-points-to-centers
-  (is (= [] (collect-points-to-centers [] [])))
+(deftest test-points-to-centers
+  (is (= [] (points-to-centers [] [])))
 
   ;; Points 10,10 and 20,20 go to center 0, and point 100,100 goes to center 1.
   (is (= [[[10 10] [20 20]] [[100 100]]]
-         (collect-points-to-centers [[10 10] [20 20] [100 100]] [[0 0] [100 100]]))))
+         (points-to-centers [[10 10] [20 20] [100 100]] [[0 0] [100 100]]))))
 

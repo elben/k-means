@@ -59,9 +59,9 @@
 (defn equal-enough [f1 f2] (< (Math/abs (- f1 f2)) 0.001))
 
 (defn find-closest
-  [p centers]
-  "Returns index of center that p is closest to."
-  (let [pointer-center-pairs (vec (map (fn [p center] [p center]) (repeat (count centers) p) centers))
+  [point centers]
+  "Returns index of center that point is closest to, by Euclidian distance."
+  (let [pointer-center-pairs (for [point (list point) center centers] [point center])
         euclid-distances (map euclid-distance pointer-center-pairs)
         min-distance (apply min euclid-distances)]
     (.indexOf euclid-distances min-distance)))
@@ -71,10 +71,9 @@
   (let [dim (count (first points))]
   (vec (map / (apply map + points) (repeat dim (double (count points)))))))
 
-(defn collect-points-to-centers
+(defn points-to-centers
   [points centers]
-  "Returns a vector of vector of points, where nth item in vector are points
-  belonging in nth center."
+  "Returns a vector of centers of points, given a sequence of points and centers."
   (let [init-center-batches (vec (repeat (count centers) []))]
     (reduce (fn [center-batches p]
               (let [closest-center (find-closest p centers)

@@ -13,7 +13,7 @@
              iters 10]
         (if (<= iters 0)
           current-centers
-          (let [center-clusters (collect-points-to-centers points current-centers)
+          (let [center-clusters (points-to-centers points current-centers)
                 updated-centers (vec (map center-of-points center-clusters))]
             (recur updated-centers (dec iters))))))))
 
