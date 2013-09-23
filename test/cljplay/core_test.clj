@@ -1,7 +1,5 @@
 (ns cljplay.core-test
-  (:require [clojure.test :refer :all]
-            [cljplay.core :refer :all]))
+  (:use clojure.test)
+  (:use cljplay.utils))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+
