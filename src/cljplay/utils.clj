@@ -1,6 +1,4 @@
-
-(ns cljplay.utils
-  (:use clojure.test cljplay.utils))
+(ns cljplay.utils)
 
 (defn add-to-coll
   ([] [])
