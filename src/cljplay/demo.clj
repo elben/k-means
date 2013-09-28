@@ -3,6 +3,11 @@
 
 (def frame (java.awt.Frame.))
 
+(def pts (vec (concat
+                (generate-2d-points 400 0 100 0 100)
+                (generate-2d-points 500 120 150 120 300)
+                (generate-2d-points 450 300 400 300 400))))
+
 (defn demo-1 []
   (do
     (-> frame (.setVisible true))
