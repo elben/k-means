@@ -1,5 +1,7 @@
 (ns cljplay.demo
-  (:use cljplay.core quil.core))
+  (:use cljplay.core
+        cljplay.utils
+        quil.core))
 
 ; (def frame (java.awt.Frame.))
 
@@ -8,7 +10,12 @@
 ;                 (generate-2d-points 500 120 150 120 300)
 ;                 (generate-2d-points 450 300 400 300 400))))
 
-(def pts (generate-2d-points 500 100 200 100 500))
+(def pts
+  (vec (concat
+         (generate-2d-points 500 40 120 60 140)
+         (generate-2d-points 300 100 200 100 300)
+         (generate-2d-points 240 300 400 300 500)
+         (generate-2d-points 300 400 500 0 100))))
 
 
 ; Fails update with this center for some reason!
@@ -20,15 +27,19 @@
 (def centers (cljplay.utils/generate-k-non-repeating-samples pts 3))
 
 ;; Call defsketch, then repeat this call to see it move!
-(def centers (update-centers pts centers))
+(do
+  (def centers (update-centers pts centers))
+  (def center-clusters (points-to-centers pts centers)))
 
 (defn setup []
   (smooth)
   (frame-rate 10)
   (background 0))
 
-(defn draw-point [x y]
-  (ellipse x y 3 3))
+(def colors [[255 0 0] [0 255 0] [0 0 255] [255 255 0] [0 255 255] [255 0 255]])
+
+(defn draw-point
+  ([x y] (ellipse x y 3 3)))
 
 (defn draw-center [x y]
   (ellipse x y 10 10))
@@ -39,24 +50,25 @@
   (fill 100)
   (background 0)
 
-  (dorun
-    (for [pt pts
-          :let [x (first pt)
-                y (last pt)]]
+  (doseq [[idx clusters] (map vector (iterate inc 0) center-clusters)]
+    (doseq [pt clusters
+            :let [x (first pt)
+                  y (last pt)]]
+      (apply stroke (colors idx))
       (draw-point x y)))
-  (dorun
-    (for [center centers
+  (doseq [[idx center] (map vector (iterate inc 0) centers)
           :let [x (first center)
                 y (last center)]]
-      (do
-        (stroke 255 0 0)
-        (draw-center x y)))))
+    (stroke 255)
+    (stroke-weight 2)
+    (apply fill (colors idx))
+    (draw-center x y)))
 
-(defsketch example                  ;;Define a new sketch named example
-  :title "Oh so many grey circles"  ;;Set the title of the sketch
-  :setup setup                      ;;Specify the setup fn
-  :draw draw                        ;;Specify the draw fn
-  :size [500 500])                  ;;You struggle to beat the golden ratio
+(defsketch example
+  :title "K-means demo"
+  :setup setup
+  :draw draw
+  :size [500 500])
 
 ;;;;;;;;;;;;;;;;;;;;;
 
