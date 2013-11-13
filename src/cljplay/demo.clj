@@ -3,95 +3,80 @@
         cljplay.utils
         quil.core))
 
-; (def frame (java.awt.Frame.))
+;; This demo will work like this:
+;;
+;; When you start up the program, it loads the demo main.
+;;
+;; In the demo program, you can be in either the 'edit' mode or the 'run' mode
+;;
+;; Edit mode
+;; - Add points via holding down mouse button
+;; - Clear all points
+;; - Add centers
+;; - Clear all centers
+;;
+;; Run mode
+;; - Run a step, using the centers
+;; 
 
-; (def pts (vec (concat
-;                 (generate-2d-points 400 0 100 0 100)
-;                 (generate-2d-points 500 120 150 120 300)
-;                 (generate-2d-points 450 300 400 300 400))))
+(def brush-size 20)
 
-(def pts
-  (vec (concat
-         (generate-2d-points 500 40 120 60 140)
-         (generate-2d-points 300 100 200 100 300)
-         (generate-2d-points 240 300 400 300 500)
-         (generate-2d-points 300 400 500 0 100))))
-
-
-; Fails update with this center for some reason!
-; (def centers [[208 151] [31 489] [323 27]])
-; (def centers (generate-2d-points 3 0 200 0 200))
-
-
-; But using the sample centers work. I wonder if it's boundry issues?
-(def centers (cljplay.utils/generate-k-non-repeating-samples pts 3))
-
-;; Call defsketch, then repeat this call to see it move!
-(do
-  (def centers (update-centers pts centers))
-  (def center-clusters (points-to-centers pts centers)))
-
-(defn setup []
-  (smooth)
-  (frame-rate 10)
-  (background 0))
-
-(def colors [[255 0 0] [0 255 0] [0 0 255] [255 255 0] [0 255 255] [255 0 255]])
-
-(defn draw-point
-  ([x y] (ellipse x y 3 3)))
-
-(defn draw-center [x y]
-  (ellipse x y 10 10))
-
-(defn draw []
-  (stroke 255)
-  (stroke-weight 1)
-  (fill 100)
-  (background 0)
-
-  (doseq [[idx clusters] (map vector (iterate inc 0) center-clusters)]
-    (doseq [pt clusters
-            :let [x (first pt)
-                  y (last pt)]]
-      (apply stroke (colors idx))
-      (draw-point x y)))
-  (doseq [[idx center] (map vector (iterate inc 0) centers)
-          :let [x (first center)
-                y (last center)]]
-    (stroke 255)
-    (stroke-weight 2)
-    (apply fill (colors idx))
-    (draw-center x y)))
-
-(defsketch example
-  :title "K-means demo"
-  :setup setup
-  :draw draw
-  :size [500 500])
-
-;;;;;;;;;;;;;;;;;;;;;
+(def points [])
 
 (defn setup []
   (smooth)
   (no-stroke)
+  (frame-rate 30)
   (set-state! :mouse-position (atom [0 0])))
+
+(defn draw-brush []
+  (let [[x y] @(state :mouse-position)]
+    (stroke-weight brush-size)
+    (stroke-float 10)
+    (point x y)))
+
+(defn draw-point
+  ([x y] (ellipse x y 5 5)))
+
+(defn draw-points []
+  (stroke-weight 2)
+  (stroke 0)
+  (fill 255 255 255)
+  (doseq [p points]
+    (draw-point (first p) (last p))))
+
+(defn mouse-moved []
+  (let [x (mouse-x)  y (mouse-y) btn (mouse-button)]
+    (reset! (state :mouse-position) [x y])))
+
+(defn jittered-point [x y]
+  "Create a point jittered by brush-sie"
+  (let [point (random-point [[(+ x brush-size) (+ y brush-size)] [(- x brush-size) (- y brush-size)]])]
+    ;; If negative, make 0.
+    (vec (map #(if (< % 0) 0 %) point))))
+
+(defn add-points []
+  "Add three random jittered points to points"
+  (let [x (mouse-x)
+        y (mouse-y)
+        new-points (repeatedly 3 #(jittered-point x y))]
+    (def points (vec (concat points new-points)))))
+
+(defn mouse-pressed []
+  (mouse-moved)
+  (add-points))
 
 (defn draw
   []
   (background-float 125)
-  (stroke-weight 20)
-  (stroke-float 10)
-  (let [[x y] @(state :mouse-position)]
-    (point x y)))
+  (draw-brush)
+  (draw-points))
 
-(defn mouse-moved []
-  (let [x (mouse-x)  y (mouse-y)]
-    (reset! (state :mouse-position) [x y])))
-
-(defsketch mouse-example
-  :title "Mouse example."
-  :size [200 200]
+(defsketch k-means-demo
+  :title "K-means Demo"
+  :size [640 480]
   :setup setup
   :draw draw
-  :mouse-moved mouse-moved)
+  :mouse-moved mouse-moved
+  :mouse-dragged mouse-pressed)
+

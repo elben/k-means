@@ -6,11 +6,10 @@ FIXME: description
 
 Download from http://example.com/FIXME.
 
-## Usage
+## Running the Demo
 
-FIXME: explanation
-
-    $ java -jar cljplay-0.1.0-standalone.jar [args]
+    lein repl
+    (in-ns 'cljplay.demo)
 
 ## Options
 

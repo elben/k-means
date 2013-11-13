@@ -7,5 +7,5 @@
                  [org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.nrepl "0.2.3"]
                  [quil "1.6.0"]]
-  :main cljplay.core
+  :main cljplay.demo
   :profiles {:uberjar {:aot :all}})
