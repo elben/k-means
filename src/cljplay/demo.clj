@@ -23,6 +23,8 @@
 
 (def points [])
 
+(def centers [])
+
 (defn setup []
   (smooth)
   (no-stroke)
@@ -38,12 +40,21 @@
 (defn draw-point
   ([x y] (ellipse x y 5 5)))
 
+(defn draw-center
+  ([x y] (ellipse x y 20 20)))
+
 (defn draw-points []
   (stroke-weight 2)
   (stroke 0)
   (fill 255 255 255)
   (doseq [p points]
     (draw-point (first p) (last p))))
+
+(defn draw-centers []
+  (stroke-weight 2)
+  (fill 255 0 0)
+  (doseq [p centers]
+    (draw-center (first p) (last p))))
 
 (defn mouse-moved []
   (let [x (mouse-x)  y (mouse-y) btn (mouse-button)]
@@ -62,15 +73,24 @@
         new-points (repeatedly 3 #(jittered-point x y))]
     (def points (vec (concat points new-points)))))
 
+(defn add-center []
+  "Add a center"
+  (let [x (mouse-x)
+        y (mouse-y)]
+    (def centers (conj centers [x y]))))
+
 (defn mouse-pressed []
   (mouse-moved)
-  (add-points))
+  (case (mouse-button)
+    :left (add-points)
+    :right (add-center)))
 
 (defn draw
   []
   (background-float 125)
   (draw-brush)
-  (draw-points))
+  (draw-points)
+  (draw-centers))
 
 (defsketch k-means-demo
   :title "K-means Demo"
