@@ -9,6 +9,14 @@ GUI built on top of Quil.
 
 ## Running the Demo
 
-    lein repl
-    (in-ns 'k-means-demo.demo)
+In the k-means folder, run:
 
+    lein repl
+
+A window should pop up.
+
+- Left-click to spray points.
+- Right-click to add centers (up to six may be added).
+- [Space] to take one step in k-means clustering algorithm.
+
+That's about it!
