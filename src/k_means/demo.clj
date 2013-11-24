@@ -23,7 +23,9 @@
 
 (def points [])
 
-(def centers [])
+(def centers [[0 0]])
+
+(def center-clusters (points-to-centers points centers))
 
 (def colors [[255 0 0] [0 255 0] [0 0 255] [255 255 0] [0 255 255] [255 0 255]])
 
@@ -83,6 +85,9 @@
     (if (< (count centers) (count colors))
       (def centers (conj centers [x y])))))
 
+(defn points-changed []
+  (def center-clusters (points-to-centers points centers)))
+
 (defn mouse-dragged []
   (mouse-moved)
   (case (mouse-button)
@@ -93,9 +98,6 @@
   (case (mouse-button)
     :right (do (add-center) (points-changed))
     :left :noop))
-
-(defn points-changed []
-  (def center-clusters (points-to-centers points centers)))
 
 (defn draw-center-clusters []
   (doseq [[idx clusters] (map vector (iterate inc 0) center-clusters)]
@@ -108,7 +110,12 @@
       (draw-point x y))))
 
 (defn key-typed []
-  (println (str "Pressed: " (raw-key) " key code: " (key-code))))
+  (println (str "Pressed: " (raw-key) " key code: " (int (raw-key))))
+  (if (= 32 (int (raw-key)))
+    (do
+      (println "space!")
+      (def centers (update-centers points centers))
+      (points-changed))))
 
 (defn draw
   []
@@ -130,9 +137,9 @@
 
 ;; Call defsketch, then repeat this call to see it move!
 ;; TODO This isn't working right now.
-(do
-  (def centers (update-centers points centers))
-  (def center-clusters (points-to-centers points centers)))
+; (do
+;   (def centers (update-centers points centers))
+;   (def center-clusters (points-to-centers points centers)))
 
 
 ;; TODO
