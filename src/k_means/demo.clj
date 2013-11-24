@@ -55,8 +55,9 @@
 (defn draw-centers []
   (stroke-weight 2)
   (fill 0 255 0)
-  (doseq [p centers]
-    (draw-center (first p) (last p))))
+  (doseq [[idx center] (map vector (iterate inc 0) centers)]
+    (apply fill (colors idx))
+    (draw-center (first center) (last center))))
 
 (defn mouse-moved []
   (let [x (mouse-x)  y (mouse-y) btn (mouse-button)]
@@ -79,27 +80,42 @@
   "Add a center"
   (let [x (mouse-x)
         y (mouse-y)]
-    (def centers (conj centers [x y]))))
+    (if (< (count centers) (count colors))
+      (def centers (conj centers [x y])))))
 
 (defn mouse-dragged []
   (mouse-moved)
   (case (mouse-button)
     :right :noop
-    :left (add-points)))
+    :left (do (add-points) (points-changed))))
 
 (defn mouse-clicked []
   (case (mouse-button)
-    :right (add-center)
+    :right (do (add-center) (points-changed))
     :left :noop))
+
+(defn points-changed []
+  (def center-clusters (points-to-centers points centers)))
+
+(defn draw-center-clusters []
+  (doseq [[idx clusters] (map vector (iterate inc 0) center-clusters)]
+    (doseq [pt clusters
+            :let [x (first pt)
+                  y (last pt)]]
+      (stroke-weight 1)
+      (stroke 0)
+      (apply fill (colors idx))
+      (draw-point x y))))
 
 (defn key-typed []
   (println (str "Pressed: " (raw-key) " key code: " (key-code))))
 
 (defn draw
   []
-  (background-float 125)
+  (background-float 0)
   (draw-brush)
-  (draw-points)
+  ; (draw-points)
+  (draw-center-clusters)
   (draw-centers))
 
 (defsketch k-means-demo
