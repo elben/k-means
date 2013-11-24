@@ -1,4 +1,4 @@
-(defproject cljplay "0.1.0-SNAPSHOT"
+(defproject k-means "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -7,5 +7,5 @@
                  [org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.nrepl "0.2.3"]
                  [quil "1.6.0"]]
-  :main cljplay.demo
+  :main k-means.demo
   :profiles {:uberjar {:aot :all}})

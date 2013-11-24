@@ -1,6 +1,6 @@
-(ns cljplay.demo
-  (:use cljplay.core
-        cljplay.utils
+(ns k-means.demo
+  (:use k-means.core
+        k-means.utils
         quil.core))
 
 ;; This demo will work like this:
@@ -24,6 +24,8 @@
 (def points [])
 
 (def centers [])
+
+(def colors [[255 0 0] [0 255 0] [0 0 255] [255 255 0] [0 255 255] [255 0 255]])
 
 (defn setup []
   (smooth)
@@ -52,7 +54,7 @@
 
 (defn draw-centers []
   (stroke-weight 2)
-  (fill 255 0 0)
+  (fill 0 255 0)
   (doseq [p centers]
     (draw-center (first p) (last p))))
 
@@ -79,11 +81,19 @@
         y (mouse-y)]
     (def centers (conj centers [x y]))))
 
-(defn mouse-pressed []
+(defn mouse-dragged []
   (mouse-moved)
   (case (mouse-button)
-    :left (add-points)
-    :right (add-center)))
+    :right :noop
+    :left (add-points)))
+
+(defn mouse-clicked []
+  (case (mouse-button)
+    :right (add-center)
+    :left :noop))
+
+(defn key-typed []
+  (println (str "Pressed: " (raw-key) " key code: " (key-code))))
 
 (defn draw
   []
@@ -98,5 +108,20 @@
   :setup setup
   :draw draw
   :mouse-moved mouse-moved
-  :mouse-dragged mouse-pressed)
+  :mouse-dragged mouse-dragged
+  :mouse-clicked mouse-clicked
+  :key-typed key-typed)
+
+;; Call defsketch, then repeat this call to see it move!
+;; TODO This isn't working right now.
+(do
+  (def centers (update-centers points centers))
+  (def center-clusters (points-to-centers points centers)))
+
+
+;; TODO
+;; - Each new added center should take its own color
+;;  - when you add a new center, run a step, so that all the other points are
+;;    colored (this may be slow!).
+;; - [Enter] should take a step.
 

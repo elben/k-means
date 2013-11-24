@@ -1,14 +1,14 @@
-# Playing with Clojure
+# K-means Clojure
 
-Just mucking around with Clojure.
+Demo of k-means in Clojure to make it easy to visualize 2-d k-means clustering
+algorithm.
 
-Right now, it's is a k-means implementation, along with a demo you can play with
-to step through each iteration of k-means. The GUI is built on top of quil.
+GUI built on top of Quil.
 
-![K-means demo](https://raw.github.com/eshira/clojure-play/master/k-means-clojure.gif "K-means Demo")
+![K-means demo](https://raw.github.com/eshira/clojure-play/master/k-means-demo.gif "K-means Demo")
 
 ## Running the Demo
 
     lein repl
-    (in-ns 'cljplay.demo)
+    (in-ns 'k-means-demo.demo)
 

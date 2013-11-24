@@ -1,6 +1,6 @@
-(ns cljplay.core
+(ns k-means.core
   (:gen-class)
-  (:use cljplay.utils))
+  (:use k-means.utils))
 
 (defn update-centers
   [points centers]

@@ -1,6 +1,6 @@
-(ns cljplay.demo-test
-  (:use cljplay.core
-        cljplay.utils
+(ns k-means.demo-test
+  (:use k-means.core
+        k-means.utils
         quil.core))
 
 (def pts
@@ -17,7 +17,7 @@
 
 
 ; But using the sample centers work. I wonder if it's boundry issues?
-(def centers (cljplay.utils/generate-k-non-repeating-samples pts 3))
+(def centers (k-means.utils/generate-k-non-repeating-samples pts 3))
 
 ;; Call defsketch, then repeat this call to see it move!
 (do

@@ -1,6 +1,6 @@
-(ns cljplay.utils-test
+(ns k-means.utils-test
   (:use clojure.test)
-  (:use cljplay.utils))
+  (:use k-means.utils))
 
 (deftest test-add-to-coll
   (is (= [] (add-to-coll)))

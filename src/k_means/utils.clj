@@ -1,4 +1,4 @@
-(ns cljplay.utils)
+(ns k-means.utils)
 
 (defn add-to-coll
   ([] [])
