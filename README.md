@@ -1,4 +1,4 @@
-# K-means Clojure
+# K-means
 
 Demo of k-means in Clojure to make it easy to visualize 2-d k-means clustering
 algorithm.
