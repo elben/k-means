@@ -9,6 +9,8 @@ K-means demo:
 
 https://raw.github.com/eshira/clojure-play/master/k-means-demo.mov.
 
+![K-means demo](https://raw.github.com/eshira/clojure-play/master/k-means-demo.gif "K-means Demo")
+
 ## Running the Demo
 
 In the k-means folder, run:
