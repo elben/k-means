@@ -9,6 +9,8 @@ K-means demo:
 
 https://raw.github.com/eshira/clojure-play/master/k-means-demo.mov.
 
+Older demo:
+
 ![K-means demo](https://raw.github.com/eshira/clojure-play/master/k-means-demo.gif "K-means Demo")
 
 ## Running the Demo
