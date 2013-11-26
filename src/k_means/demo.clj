@@ -3,67 +3,89 @@
         k-means.utils
         quil.core))
 
-;; This demo will work like this:
+;; K-means Demo
 ;;
-;; When you start up the program, it loads the demo main.
+;; Left click and drag to spray points.
+;; Right click to add a center (you may add up to six).
+;; [Space] to take a step.
 ;;
-;; In the demo program, you can be in either the 'edit' mode or the 'run' mode
-;;
-;; Edit mode
-;; - Add points via holding down mouse button
-;; - Clear all points
-;; - Add centers
-;; - Clear all centers
-;;
-;; Run mode
-;; - Run a step, using the centers
-;; 
+;; Enjoy!
+
+;;;;;;;;;;;;;
+;; Config
+;;;;;;;;;;;;;
 
 (def brush-size 20)
 
+(def window-size [640 480]) ;; width, height
+
+;; red, green, blue, yellow, purple, teal
+(def colors [[211 48 48] [103 165 48] [20 136 255] [218 215 128] [158 0 226] [66 208 230]])
+
+;;;;;;;;;;;;;
+;; Data
+;;;;;;;;;;;;;
+
+;; The data points.
 (def points [])
 
-(def centers [[0 0]])
+;; The centers. Default to one center in middle of window.
+(def centers [(vec (map #(/ % 2) window-size))])
 
+;; Vector (size is number of centers) of vector containing points.
+;;
+;; Example, if there are two centers:
+;; [[points in center 1] [points in center 2]]
+;;
+;; We save this in a global scope so that the drawing function doesn't have to
+;; calculate the points to center mapping every frame rate.
+;;
+;; Assumes ordering matters in relation to centers. That is, (center-clusters 0)
+;; is tied to (center 0), and so on.
 (def center-clusters (points-to-centers points centers))
 
-(def colors [[255 0 0] [0 255 0] [0 0 255] [255 255 0] [0 255 255] [255 0 255]])
-
-(defn setup []
-  (smooth)
-  (no-stroke)
-  (frame-rate 30)
-  (set-state! :mouse-position (atom [0 0])))
-
-(defn draw-brush []
-  (let [[x y] @(state :mouse-position)]
-    (stroke-weight brush-size)
-    (stroke-float 10)
-    (point x y)))
+;;;;;;;;;;;;;
+;; Drawing
+;;;;;;;;;;;;;
 
 (defn draw-point
+  "Draws a data point"
   ([x y] (ellipse x y 5 5)))
 
 (defn draw-center
+  "Draws a center"
   ([x y] (ellipse x y 20 20)))
 
-(defn draw-points []
-  (stroke-weight 2)
-  (stroke 0)
-  (fill 255 255 255)
-  (doseq [p points]
-    (draw-point (first p) (last p))))
+(defn draw-brush []
+  "Draws the spray brush"
+  (let [[x y] @(state :mouse-position)]
+    (stroke-weight 2)
+    (stroke 255)
+    (fill 0)
+    (ellipse x y brush-size brush-size)))
 
 (defn draw-centers []
   (stroke-weight 2)
+  (stroke 255)
   (fill 0 255 0)
   (doseq [[idx center] (map vector (iterate inc 0) centers)]
     (apply fill (colors idx))
     (draw-center (first center) (last center))))
 
-(defn mouse-moved []
-  (let [x (mouse-x)  y (mouse-y) btn (mouse-button)]
-    (reset! (state :mouse-position) [x y])))
+(defn draw-center-clusters []
+  ;; For each center cluster, draw each point according to color of center.
+  (doseq [[idx clusters] (map vector (iterate inc 0) center-clusters)]
+    (doseq [pt clusters
+            :let [x (first pt)
+                  y (last pt)]]
+      (stroke-weight 0)
+      (stroke 255)
+      (apply fill (colors idx))
+      (draw-point x y))))
+
+;;;;;;;;;;;;;
+;; Data changes
+;;;;;;;;;;;;;
 
 (defn jittered-point [x y]
   "Create a point jittered by brush-sie"
@@ -86,65 +108,60 @@
       (def centers (conj centers [x y])))))
 
 (defn points-changed []
+  "Update center clusters"
   (def center-clusters (points-to-centers points centers)))
+
+;;;;;;;;;;;;;
+;; Input
+;;;;;;;;;;;;;
+
+(defn mouse-moved []
+  (let [x (mouse-x)  y (mouse-y)]
+    (reset! (state :mouse-position) [x y])))
 
 (defn mouse-dragged []
   (mouse-moved)
   (case (mouse-button)
-    :right :noop
-    :left (do (add-points) (points-changed))))
+    :right ()
+    :left (do (add-points)
+              (points-changed))))
 
 (defn mouse-clicked []
   (case (mouse-button)
-    :right (do (add-center) (points-changed))
-    :left :noop))
-
-(defn draw-center-clusters []
-  (doseq [[idx clusters] (map vector (iterate inc 0) center-clusters)]
-    (doseq [pt clusters
-            :let [x (first pt)
-                  y (last pt)]]
-      (stroke-weight 1)
-      (stroke 0)
-      (apply fill (colors idx))
-      (draw-point x y))))
+    :right (do (add-center)
+               (points-changed))
+    :left ()))
 
 (defn key-typed []
-  (println (str "Pressed: " (raw-key) " key code: " (int (raw-key))))
   (if (= 32 (int (raw-key)))
+    ; [Space] hit
     (do
-      (println "space!")
       (def centers (update-centers points centers))
       (points-changed))))
+
+;;;;;;;;;;;;;
+;; Main
+;;;;;;;;;;;;;
+
+(defn setup []
+  (smooth)
+  (no-stroke)
+  (frame-rate 30)
+  (set-state! :mouse-position (atom [0 0])))
 
 (defn draw
   []
   (background-float 0)
   (draw-brush)
-  ; (draw-points)
   (draw-center-clusters)
   (draw-centers))
 
 (defsketch k-means-demo
   :title "K-means Demo"
-  :size [640 480]
+  :size (vec window-size)
   :setup setup
   :draw draw
   :mouse-moved mouse-moved
   :mouse-dragged mouse-dragged
   :mouse-clicked mouse-clicked
   :key-typed key-typed)
-
-;; Call defsketch, then repeat this call to see it move!
-;; TODO This isn't working right now.
-; (do
-;   (def centers (update-centers points centers))
-;   (def center-clusters (points-to-centers points centers)))
-
-
-;; TODO
-;; - Each new added center should take its own color
-;;  - when you add a new center, run a step, so that all the other points are
-;;    colored (this may be slow!).
-;; - [Enter] should take a step.
-
