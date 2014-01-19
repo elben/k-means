@@ -3,10 +3,14 @@
   (:use k-means.utils))
 
 (defn update-centers
+  "Return updated centers, given points and centers."
   [points centers]
   (let [center-clusters (points-to-centers points centers)
-        updated-centers (vec (map center-of-points center-clusters))]
-    updated-centers))
+        updated-centers (vec (map center-of-points center-clusters))
+
+        ;; Use old center if new center if empty
+        filtered-centers (vec (map (fn [new-center old-center] (if (empty? new-center) old-center new-center)) updated-centers centers))]
+    filtered-centers))
 
 ;; TODO somehow make this lazy. I want some kind of interface where I can stop
 ;; the k-means run, print out the current state, then wait for a "continue" call
