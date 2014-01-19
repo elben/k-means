@@ -18,5 +18,6 @@ A window should pop up.
 - Left-click to spray points.
 - Right-click to add centers (up to six may be added).
 - [Space] to take one step in k-means clustering algorithm.
+- `r` will reset the points.
 
 That's about it!

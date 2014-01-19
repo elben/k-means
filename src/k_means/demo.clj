@@ -26,11 +26,13 @@
 ;; Data
 ;;;;;;;;;;;;;
 
-;; The data points.
-(def points [])
+(defn reset []
+  ;; The data points.
+  (def points [])
+  ;; The centers. Default to one center in middle of window.
+  (def centers [(vec (map #(/ % 2) window-size))]))
 
-;; The centers. Default to one center in middle of window.
-(def centers [(vec (map #(/ % 2) window-size))])
+(reset)
 
 ;; Vector (size is number of centers) of vector containing points.
 ;;
@@ -133,11 +135,15 @@
     :left ()))
 
 (defn key-typed []
-  (if (= 32 (int (raw-key)))
-    ; [Space] hit
-    (do
+  (case (int (raw-key))
+    32 ; [Space] to step
+     (do
       (def centers (update-centers points centers))
-      (points-changed))))
+      (points-changed))
+    114 ; 'r' for reset
+      (do (reset)
+          (points-changed))
+    nil))
 
 ;;;;;;;;;;;;;
 ;; Main
