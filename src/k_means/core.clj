@@ -8,9 +8,10 @@
   [points centers]
   (let [center-clusters (points-to-centers points centers)
         updated-centers (vec (map center-of-points center-clusters))
+        use-existing-if-empty (fn [new-center old-center] (if (empty? new-center) old-center new-center))
 
         ;; Use old center if new center if empty
-        filtered-centers (vec (map (fn [new-center old-center] (if (empty? new-center) old-center new-center)) updated-centers centers))]
+        filtered-centers (vec (map use-existing-if-empty updated-centers centers))]
     filtered-centers))
 
 ;; TODO somehow make this lazy. I want some kind of interface where I can stop
