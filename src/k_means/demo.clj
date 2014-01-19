@@ -26,11 +26,14 @@
 ;; Data
 ;;;;;;;;;;;;;
 
+(defn center-window-point []
+  (vec (map #(/ % 2) window-size)))
+
 (defn reset []
   ;; The data points.
-  (def points [])
+  (def points (ref []))
   ;; The centers. Default to one center in middle of window.
-  (def centers [(vec (map #(/ % 2) window-size))]))
+  (def centers (ref [(center-window-point)])))
 
 (reset)
 
@@ -44,7 +47,7 @@
 ;;
 ;; Assumes ordering matters in relation to centers. That is, (center-clusters 0)
 ;; is tied to (center 0), and so on.
-(def center-clusters (points-to-centers points centers))
+(def center-clusters (points-to-centers @points @centers))
 
 ;;;;;;;;;;;;;
 ;; Drawing
@@ -70,7 +73,7 @@
   (stroke-weight 2)
   (stroke 255)
   (fill 0 255 0)
-  (doseq [[idx center] (map vector (iterate inc 0) centers)]
+  (doseq [[idx center] (map vector (iterate inc 0) @centers)]
     (apply fill (colors idx))
     (draw-center (first center) (last center))))
 
@@ -100,18 +103,18 @@
   (let [x (mouse-x)
         y (mouse-y)
         new-points (repeatedly 3 #(jittered-point x y))]
-    (def points (vec (concat points new-points)))))
+    (dosync (alter points #(vec (concat % new-points))))))
 
 (defn add-center []
   "Add a center"
   (let [x (mouse-x)
         y (mouse-y)]
-    (if (< (count centers) (count colors))
-      (def centers (conj centers [x y])))))
+    (if (< (count @centers) (count colors))
+      (dosync (alter centers #(conj % [x y]))))))
 
 (defn points-changed []
   "Update center clusters"
-  (def center-clusters (points-to-centers points centers)))
+  (def center-clusters (points-to-centers @points @centers)))
 
 ;;;;;;;;;;;;;
 ;; Input
@@ -137,8 +140,8 @@
 (defn key-typed []
   (case (int (raw-key))
     32 ; [Space] to step
-    (when-not (empty? points)
-      (def centers (update-centers points centers))
+    (when-not (empty? @points)
+      (dosync (ref-set centers (update-centers @points @centers)))
       (points-changed))
     114 ; 'r' for reset
       (do (reset)
