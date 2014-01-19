@@ -31,29 +31,3 @@
         (if (<= iters 0)
           current-centers
           (recur (update-centers points current-centers) (dec iters)))))))
-
-(defn generate-point
-  "Generates a dim-dimension point"
-  ([dim]
-   (generate-point dim 100))
-  ([dim max-size]
-   (vec (repeatedly dim #(rand-int max-size)))))
-
-(defn generate-2d-point
-  [min-x max-x min-y max-y]
-  (let [diff-x (- max-x min-x)
-        diff-y (- max-y min-y)
-        x (+ min-x (rand-int diff-x))
-        y (+ min-y (rand-int diff-y))]
-    [x y]))
-
-(defn generate-points
-  ([n dim]
-   (vec (repeatedly n #(generate-point dim))))
-  ([n dim max-size]
-   (vec (repeatedly n #(generate-point dim max-size)))))
-
-
-(defn generate-2d-points [n min-x max-x min-y max-y]
-  (vec (repeatedly n #(generate-2d-point min-x max-y min-x max-x))))
-

@@ -26,10 +26,6 @@
   (let [rand-over-min-max (fn [dim-min dim-max] (+ dim-min (rand (- dim-max dim-min))))]
     (apply map rand-over-min-max mins-maxs)))
 
-(defn sample-k-random
-  [points k]
-  (repeatedly k #(rand-nth points)))
-
 (defn generate-k-non-repeating-samples
   [points k]
   "Generate k non-repeating samples from points"

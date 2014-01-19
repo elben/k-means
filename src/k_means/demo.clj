@@ -93,7 +93,7 @@
 ;;;;;;;;;;;;;
 
 (defn jittered-point [x y]
-  "Create a point jittered by brush-sie"
+  "Create a point jittered by brush-size"
   (let [point (random-point [[(+ x brush-size) (+ y brush-size)] [(- x brush-size) (- y brush-size)]])]
     ;; If negative, make 0.
     (vec (map #(if (< % 0) 0 %) point))))
