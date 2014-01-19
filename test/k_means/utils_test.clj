@@ -1,3 +1,13 @@
+;; To run tests:
+;;
+;; lein test
+;;
+;; Or, in REPL:
+;;
+;; (ns k-means.utils-test)
+;; (run-tests)
+;; (test-my-test)
+
 (ns k-means.utils-test
   (:use clojure.test)
   (:use k-means.utils))
@@ -39,3 +49,8 @@
   (is (= [[[10 10] [20 20]] [[100 100]]]
          (points-to-centers [[10 10] [20 20] [100 100]] [[0 0] [100 100]]))))
 
+(deftest test-center-of-points
+  (is (= [2.5 2.5] (center-of-points [[0 0] [5 5]])))
+  (is (= [2.5 2.5 2.5] (center-of-points [[0 0 0] [5 5 5]])))
+  (is (= [] (center-of-points [[]])))
+  (is (= [] (center-of-points []))))

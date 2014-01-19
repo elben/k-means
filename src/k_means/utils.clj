@@ -66,8 +66,12 @@
 
 (defn center-of-points [points]
   "Return the mean center of the given points"
-  (let [dim (count (first points))]
-  (vec (map / (apply map + points) (repeat dim (double (count points)))))))
+  (let [dim (count (first points))
+        sum-points (if (empty? points)
+                     []
+                     (apply map + points))
+        num-points (repeat (double (count points)))]
+  (vec (map / sum-points num-points))))
 
 (defn points-to-centers
   [points centers]

@@ -137,7 +137,7 @@
 (defn key-typed []
   (case (int (raw-key))
     32 ; [Space] to step
-     (do
+    (when-not (empty? points)
       (def centers (update-centers points centers))
       (points-changed))
     114 ; 'r' for reset

@@ -12,6 +12,9 @@ GUI built on top of Quil.
 In the k-means folder, run:
 
     lein repl
+    
+    # Run tests
+    lein test
 
 A window should pop up.
 
