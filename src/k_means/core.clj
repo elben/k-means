@@ -3,7 +3,8 @@
   (:use k-means.utils))
 
 (defn update-centers
-  "Return updated centers, given points and centers."
+  "The fundamental k-means step.
+  Return updated centers, given points and centers."
   [points centers]
   (let [center-clusters (points-to-centers points centers)
         updated-centers (vec (map center-of-points center-clusters))

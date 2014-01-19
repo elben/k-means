@@ -24,3 +24,17 @@ A window should pop up.
 - `r` will reset the points.
 
 That's about it!
+
+# Miscellaneous
+
+To run tests: `lein test`.
+
+Or, to run tests in the REPL:
+
+```clojure
+(ns k-means.core-test)
+(run-tests)
+
+;; Runs a specific test named test-my-test.
+(test-my-test)
+```

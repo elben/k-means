@@ -1,13 +1,3 @@
-;; To run tests:
-;;
-;; lein test
-;;
-;; Or, in REPL:
-;;
-;; (ns k-means.core-test)
-;; (run-tests)
-;; (test-my-test)
-
 (ns k-means.core-test
   (:use clojure.test)
   (:use k-means.core))
