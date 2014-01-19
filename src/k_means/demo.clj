@@ -141,7 +141,7 @@
   (case (int (raw-key))
     32 ; [Space] to step
     (when-not (empty? @points)
-      (dosync (ref-set centers (update-centers @points @centers)))
+      (dosync (ref-set centers (update-centers (ensure @points) @centers)))
       (points-changed))
     114 ; 'r' for reset
       (do (reset)
