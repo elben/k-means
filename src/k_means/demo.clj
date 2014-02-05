@@ -141,7 +141,10 @@
   (case (int (raw-key))
     32 ; [Space] to step
     (when-not (empty? @points)
-      (dosync (ref-set centers (update-centers (ensure @points) @centers)))
+      ; ensure points because points isn't ref-set/altered in the dosync, but we
+      ; need it to ensure that points isn't changed in this transaction.
+      ; http://clojure.org/refs, point #3.
+      (dosync (ref-set centers (update-centers (ensure points) @centers)))
       (points-changed))
     114 ; 'r' for reset
       (do (reset)
