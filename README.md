@@ -5,7 +5,7 @@ algorithm.
 
 GUI built on top of Quil.
 
-![K-means demo](https://raw.github.com/elben/clojure-play/master/k-means-demo.gif "K-means Demo")
+![K-means demo](https://raw.github.com/elben/k-means/master/k-means-demo.gif "K-means Demo")
 
 ## Running the Demo
 
